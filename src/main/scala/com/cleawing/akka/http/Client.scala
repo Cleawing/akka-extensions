@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.{HttpsContext, Http}
 import akka.http.scaladsl.Http.OutgoingConnection
-import akka.http.scaladsl.model.{HttpResponse, HttpRequest}
+import akka.http.scaladsl.model.{StatusCode, HttpResponse, HttpRequest}
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source, Flow}
 
@@ -41,4 +41,15 @@ trait Client {
       case t : Throwable => throw t
     }
   }
+}
+
+object Client {
+  sealed trait Response {
+    val status: StatusCode
+    val body: String
+  }
+
+  case class Success(status: StatusCode, body: String) extends Response
+  case class Error(status: StatusCode, body: String) extends Response
+  case class Failure(cause: Throwable)
 }
